@@ -1,0 +1,234 @@
+<div class="page-bg bg-start"></div>
+
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <span class="ttl" style="color:#fff;text-shadow:1px 1px 0 #000;font-size:1.1rem">Welcome to</span>
+    </div>
+    <!-- Palette switcher -->
+    <div class="glass-card d-inline-flex align-items-center gap-2" style="padding:0.4rem 0.8rem;">
+      <span class="ttl" style="font-size:0.9rem;">Theme</span>
+      <span class="palette-swatch" data-palette="pink"       title="Pastel pink"  style="background:linear-gradient(135deg,#ffe4ec,#ff8fb1)"></span>
+      <span class="palette-swatch" data-palette="fuchsia"    title="Fuchsia black" style="background:linear-gradient(135deg,#000,#ff1cb1)"></span>
+      <span class="palette-swatch" data-palette="bluepurple" title="Blue purple"  style="background:linear-gradient(135deg,#1b1f6b,#7b6cff)"></span>
+      <span class="palette-swatch" data-palette="mint"       title="Mint cream"   style="background:linear-gradient(135deg,#e8fff3,#6bcf95)"></span>
+      <span class="palette-swatch" data-palette="dark"       title="Dark carnival" style="background:linear-gradient(135deg,#0d0719,#ff6b35)"></span>
+    </div>
+  </div>
+
+  <div class="text-center my-4">
+    <h1 class="carnival-title">Virtual Carnival</h1>
+    <p class="ttl" style="color:#fff;text-shadow:1px 1px 0 #000">Step right up. Play five games. Win all the medals.</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+      <div class="glass-card start-form">
+        <h3 class="ttl mb-3">Add Players</h3>
+        <label class="lbl mb-1">Username</label>
+        <input id="username-input" type="text" maxlength="40" placeholder="e.g. minecraftking99">
+        <div class="d-flex gap-2 mt-3 flex-wrap">
+          <button id="btn-add-player" class="btn btn-carnival">Add Player</button>
+          <button id="btn-start"      class="btn btn-carnival warning">Start Game</button>
+          <button id="btn-scoreboards" class="btn btn-carnival secondary">Scoreboards</button>
+        </div>
+
+        <h5 class="ttl mt-4 mb-2">Current Session</h5>
+        <div id="session-players" class="d-flex flex-wrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scoreboard modal -->
+<div class="modal fade" id="scoreboardModal" tabindex="-1">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title ttl funky">Scoreboards</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="scoreboards-body">
+        <div class="text-center"><div class="spinner-border" role="status"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input for photo upload -->
+<input type="file" id="photo-upload-input" accept="image/*" style="display:none">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Palette swatches
+  document.querySelectorAll('.palette-swatch').forEach(s => {
+    s.addEventListener('click', () => PaletteManager.apply(s.dataset.palette));
+  });
+
+  // Start page music
+  AudioManager.init('/audio/bgm_start.mp3', 0.35);
+
+  // Render the in-session players list
+  function renderSessionPlayers() {
+    const host = document.getElementById('session-players');
+    host.innerHTML = '';
+    const players = SessionManager.players();
+    if (!players.length) {
+      host.innerHTML = '<em class="lbl" style="opacity:0.7">No players yet.</em>';
+      return;
+    }
+    players.forEach(p => {
+      const chip = document.createElement('div');
+      chip.className = 'player-chip';
+      chip.innerHTML = `
+        <img src="${p.photo_path}">
+        <span>${escapeHtml(p.username)}</span>
+        <span class="remove" title="Remove from session">&times;</span>`;
+      chip.querySelector('.remove').addEventListener('click', () => {
+        SessionManager.removePlayer(p.id);
+        renderSessionPlayers();
+      });
+      host.appendChild(chip);
+    });
+  }
+  renderSessionPlayers();
+
+  // Add player
+  document.getElementById('btn-add-player').addEventListener('click', async () => {
+    const input = document.getElementById('username-input');
+    const username = input.value.trim();
+    if (!username) { alert('Please enter a username.'); return; }
+    try {
+      const player = await API.createPlayer(username);
+      SessionManager.addPlayer(player);
+      input.value = '';
+      renderSessionPlayers();
+    } catch (e) { alert('Could not add player: ' + e.message); }
+  });
+
+  document.getElementById('username-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btn-add-player').click();
+  });
+
+  // Start game
+  document.getElementById('btn-start').addEventListener('click', () => {
+    if (!SessionManager.players().length) { alert('Add at least one player first.'); return; }
+    window.location.href = '/games';
+  });
+
+  // Scoreboards modal
+  const sbModal = new bootstrap.Modal('#scoreboardModal');
+  document.getElementById('btn-scoreboards').addEventListener('click', async () => {
+    sbModal.show();
+    const body = document.getElementById('scoreboards-body');
+    body.innerHTML = '<div class="text-center"><div class="spinner-border"></div></div>';
+    try {
+      const data = await API.allScoreboards();
+      body.innerHTML = '';
+      data.forEach(g => {
+        const sec = document.createElement('div');
+        sec.className = 'mb-4';
+        sec.innerHTML = `
+          <h5 class="ttl funky" style="color:var(--primary-strong)">${escapeHtml(g.name)}</h5>
+          <table class="score-table">
+            <thead><tr>
+              <th>#</th><th>Photo</th><th>Player</th><th>Highest</th><th>Last</th><th></th><th></th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>`;
+        const tbody = sec.querySelector('tbody');
+        if (!g.scores.length) {
+          tbody.innerHTML = '<tr><td colspan="7" class="text-center"><em>No scores yet.</em></td></tr>';
+        } else {
+          g.scores.forEach((row, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td>${i + 1}</td>
+              <td><img src="${row.photo_path}" class="avatar player-photo" data-id="${row.id}"></td>
+              <td><span class="player-name" data-id="${row.id}">${escapeHtml(row.username)}</span></td>
+              <td><strong>${row.max_score}</strong></td>
+              <td>${row.last_score}</td>
+              <td><button class="btn btn-sm btn-carnival warning btn-reset" data-id="${row.id}">Reset Score</button></td>
+              <td><button class="btn btn-sm btn-carnival danger   btn-del"   data-id="${row.id}">Delete Player</button></td>`;
+            tbody.appendChild(tr);
+          });
+        }
+        body.appendChild(sec);
+      });
+
+      attachRowHandlers(body);
+    } catch (e) {
+      body.innerHTML = '<div class="alert alert-danger">Error loading scoreboards: ' + escapeHtml(e.message) + '</div>';
+    }
+  });
+
+  function attachRowHandlers(scope) {
+    // double confirm reset
+    scope.querySelectorAll('.btn-reset').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Reset this player\'s scores to 0?')) return;
+        if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+        await API.resetScores(btn.dataset.id);
+        document.getElementById('btn-scoreboards').click();
+      });
+    });
+    // double confirm delete
+    scope.querySelectorAll('.btn-del').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        if (!confirm('Delete this player entirely?')) return;
+        if (!confirm('Final confirmation: delete forever?')) return;
+        await API.deletePlayer(btn.dataset.id);
+        SessionManager.removePlayer(parseInt(btn.dataset.id, 10));
+        renderSessionPlayers();
+        document.getElementById('btn-scoreboards').click();
+      });
+    });
+
+    // double-click name to rename
+    scope.querySelectorAll('.player-name').forEach(span => {
+      span.addEventListener('dblclick', () => {
+        const id = span.dataset.id;
+        const old = span.textContent;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = old;
+        input.maxLength = 40;
+        input.style.width = '160px';
+        span.replaceWith(input);
+        input.focus();
+        const finish = async (commit) => {
+          if (commit && input.value.trim() && input.value.trim() !== old) {
+            try {
+              const updated = await API.renamePlayer(id, input.value.trim());
+              span.textContent = updated.username;
+            } catch (e) { alert('Rename failed.'); }
+          }
+          input.replaceWith(span);
+        };
+        input.addEventListener('blur',    () => finish(true));
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter')  finish(true);
+          if (e.key === 'Escape') finish(false);
+        });
+      });
+    });
+
+    // double-click photo to upload
+    scope.querySelectorAll('.player-photo').forEach(img => {
+      img.addEventListener('dblclick', () => {
+        const id = img.dataset.id;
+        const fileInput = document.getElementById('photo-upload-input');
+        fileInput.value = '';
+        fileInput.onchange = async () => {
+          if (!fileInput.files[0]) return;
+          try {
+            const updated = await API.uploadPhoto(id, fileInput.files[0]);
+            img.src = updated.photo_path + '?t=' + Date.now();
+          } catch (e) { alert('Upload failed.'); }
+        };
+        fileInput.click();
+      });
+    });
+  }
+});
+</script>

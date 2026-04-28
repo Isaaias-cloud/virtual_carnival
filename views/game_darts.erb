@@ -1,0 +1,17 @@
+<div class="game-stage">
+  <div class="game-bg" style="background-image:url('/images/stand_darts.png');"></div>
+  <div class="game-hud">
+    <a href="/games" class="btn btn-carnival secondary">← Back</a>
+    <h2 class="game-title funky-shade">Balloon Darts</h2>
+    <span class="timer" id="timer">30</span>
+  </div>
+  <div id="phase" class="container-fluid"></div>
+  <div class="score-side" id="score-side"></div>
+</div>
+<script src="/js/game_darts.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  AudioManager.init('/audio/game_darts.mp3', 0.35);
+  GameDarts.start();
+});
+</script>

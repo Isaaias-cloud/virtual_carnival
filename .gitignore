@@ -1,0 +1,6 @@
+.bundle/
+vendor/
+public/uploads/*
+!public/uploads/.gitkeep
+*.log
+*.lock

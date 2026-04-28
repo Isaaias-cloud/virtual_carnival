@@ -1,0 +1,23 @@
+<div class="game-stage">
+  <div class="game-bg" style="background-image:url('/images/stand_ducks.png');"></div>
+
+  <div class="game-hud">
+    <a href="/games" class="btn btn-carnival secondary">← Back</a>
+    <h2 class="game-title funky-shade">Pick the Ducks</h2>
+    <span class="timer" id="timer">30</span>
+  </div>
+
+  <div id="phase" class="container-fluid">
+    <!-- dice phase or playing phase rendered by JS -->
+  </div>
+
+  <div class="score-side" id="score-side"></div>
+</div>
+
+<script src="/js/game_ducks.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  AudioManager.init('/audio/game_ducks.mp3', 0.35);
+  GameDucks.start();
+});
+</script>

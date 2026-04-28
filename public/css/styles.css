@@ -1,0 +1,738 @@
+/* =====================================================
+   Virtual Carnival — main stylesheet
+   Fonts:
+     - Century Gothic        -> titles, instructions
+     - Times New Roman       -> textboxes, labels
+     - Bungee (Google Fonts) -> "funky, big, eye-catching"
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Bungee+Shade&display=swap');
+
+:root {
+  /* default palette: pastel pink + white */
+  --bg-1: #ffe4ec;
+  --bg-2: #ffffff;
+  --primary: #ff8fb1;
+  --primary-strong: #e64f86;
+  --text: #4a2236;
+  --accent: #ffd166;
+  --card: rgba(255,255,255,0.85);
+  --border: rgba(230, 79, 134, 0.4);
+  --shadow: 0 6px 18px rgba(230,79,134,0.20);
+}
+
+/* === palette: fuchsia + black === */
+body[data-palette="fuchsia"] {
+  --bg-1: #1a0014;
+  --bg-2: #000000;
+  --primary: #ff1cb1;
+  --primary-strong: #ff5edf;
+  --text: #ffe1f4;
+  --accent: #ffe14d;
+  --card: rgba(20,0,15,0.85);
+  --border: rgba(255,28,177,0.55);
+  --shadow: 0 6px 22px rgba(255,28,177,0.35);
+}
+
+/* === palette: blue + purple === */
+body[data-palette="bluepurple"] {
+  --bg-1: #1b1f6b;
+  --bg-2: #5b2a86;
+  --primary: #7b6cff;
+  --primary-strong: #c084fc;
+  --text: #f3eaff;
+  --accent: #ffd166;
+  --card: rgba(36,30,90,0.82);
+  --border: rgba(192,132,252,0.55);
+  --shadow: 0 6px 22px rgba(123,108,255,0.35);
+}
+
+/* === palette: mint + cream === */
+body[data-palette="mint"] {
+  --bg-1: #e8fff3;
+  --bg-2: #fffdf2;
+  --primary: #6bcf95;
+  --primary-strong: #2d8f5e;
+  --text: #1f3a2b;
+  --accent: #ffb84d;
+  --card: rgba(255,253,242,0.9);
+  --border: rgba(45,143,94,0.4);
+  --shadow: 0 6px 18px rgba(45,143,94,0.2);
+}
+
+/* === palette: dark carnival === */
+body[data-palette="dark"] {
+  --bg-1: #1a0d2e;
+  --bg-2: #0d0719;
+  --primary: #ff6b35;
+  --primary-strong: #ffd166;
+  --text: #ffeec2;
+  --accent: #ef476f;
+  --card: rgba(26,13,46,0.88);
+  --border: rgba(255,107,53,0.55);
+  --shadow: 0 6px 22px rgba(255,107,53,0.35);
+}
+
+/* ---------- BASE ---------- */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: "Times New Roman", Times, serif;
+  background: linear-gradient(135deg, var(--bg-1), var(--bg-2));
+  background-attachment: fixed;
+  transition: background 0.6s ease, color 0.4s ease;
+}
+
+h1, h2, h3, h4, .title-font, .ttl {
+  font-family: "Century Gothic", "Apple Gothic", "Arial Narrow", sans-serif;
+  letter-spacing: 0.02em;
+}
+
+input, textarea, label, .label-font, .lbl {
+  font-family: "Times New Roman", Times, serif;
+}
+
+.funky {
+  font-family: 'Bungee', "Century Gothic", sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.funky-shade {
+  font-family: 'Bungee Shade', 'Bungee', sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ---------- BACKGROUND IMAGES ---------- */
+.page-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  filter: saturate(1.05);
+}
+.page-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.55));
+}
+
+.bg-start  { background-image: url('/images/bg_start.png'); }
+.bg-games  { background-image: url('/images/bg_games.png'); }
+
+/* ---------- CARDS / PANELS ---------- */
+.glass-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+  padding: 1.25rem 1.5rem;
+  color: var(--text);
+}
+
+/* ---------- BUTTONS ---------- */
+.btn-carnival {
+  background: var(--primary);
+  color: #fff;
+  border: 2px solid var(--primary-strong);
+  border-radius: 999px;
+  padding: 0.55rem 1.4rem;
+  font-family: 'Bungee', sans-serif;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  box-shadow: var(--shadow);
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+.btn-carnival:hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
+  color: #fff;
+}
+.btn-carnival.secondary {
+  background: transparent;
+  color: var(--primary-strong);
+}
+.btn-carnival.danger {
+  background: #c0392b;
+  border-color: #962d22;
+}
+.btn-carnival.warning {
+  background: var(--accent);
+  color: #4a2a00;
+  border-color: #b48800;
+}
+
+/* ---------- TITLE ---------- */
+.carnival-title {
+  font-family: 'Bungee Shade', sans-serif;
+  font-size: clamp(2.4rem, 7vw, 5.5rem);
+  color: var(--primary-strong);
+  text-shadow: 4px 4px 0 var(--accent), -2px -2px 0 #fff;
+  line-height: 1;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- START PAGE ---------- */
+.start-form input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 1.05rem;
+}
+
+.player-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  margin: 0.2rem;
+  color: var(--text);
+}
+.player-chip img {
+  width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--primary);
+}
+.player-chip .remove {
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--primary-strong);
+}
+
+/* ---------- SCOREBOARD MODAL TABLES ---------- */
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: "Times New Roman", Times, serif;
+}
+.score-table th, .score-table td {
+  padding: 0.45rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: middle;
+}
+.score-table th {
+  font-family: "Century Gothic", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  color: var(--primary-strong);
+}
+.score-table img.avatar {
+  width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--primary);
+}
+
+/* ---------- GAMES PAGE: CAROUSEL ---------- */
+.stand-card {
+  position: relative;
+  border-radius: 22px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.35s ease, box-shadow 0.35s ease, filter 0.35s ease;
+  box-shadow: var(--shadow);
+}
+.stand-card img {
+  width: 100%;
+  display: block;
+  height: 480px;
+  object-fit: cover;
+}
+.stand-card .stand-name {
+  position: absolute;
+  bottom: 1rem; left: 1rem; right: 1rem;
+  font-family: 'Bungee Shade', sans-serif;
+  color: #fff;
+  font-size: clamp(1.5rem, 3.5vw, 2.6rem);
+  text-shadow: 2px 2px 0 var(--primary-strong);
+  text-transform: uppercase;
+}
+.stand-card:hover {
+  transform: scale(1.03);
+  filter: brightness(1.08) saturate(1.1);
+  box-shadow: 0 0 40px var(--primary-strong), var(--shadow);
+  animation: pulse-glow 1.4s infinite alternate;
+}
+@keyframes pulse-glow {
+  from { box-shadow: 0 0 18px var(--primary-strong), var(--shadow); }
+  to   { box-shadow: 0 0 50px var(--primary), 0 0 80px var(--primary-strong); }
+}
+
+.session-leaderboard {
+  position: fixed;
+  top: 90px;
+  right: 12px;
+  width: 240px;
+  z-index: 5;
+}
+
+/* ---------- GAME PAGES ---------- */
+.game-stage {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+.game-bg {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-size: cover;
+  filter: blur(6px) brightness(0.65);
+  z-index: -1;
+}
+.game-hud {
+  position: relative;
+  z-index: 2;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.game-title {
+  font-family: 'Bungee Shade', sans-serif;
+  color: #fff;
+  text-shadow: 3px 3px 0 var(--primary-strong);
+  font-size: clamp(1.6rem, 4vw, 3rem);
+  text-align: center;
+  flex: 1;
+}
+.timer {
+  font-family: 'Bungee', sans-serif;
+  font-size: 2.4rem;
+  background: var(--primary-strong);
+  color: #fff;
+  padding: 0.2rem 0.9rem;
+  border-radius: 12px;
+  min-width: 90px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.score-side {
+  position: absolute;
+  top: 100px; left: 12px;
+  width: 240px;
+  z-index: 3;
+}
+.score-side .row-player {
+  display: flex; gap: 0.5rem; align-items: center;
+  padding: 0.35rem 0.5rem;
+  border-radius: 10px;
+  margin-bottom: 0.2rem;
+  font-family: "Times New Roman", serif;
+}
+.score-side .row-player.active {
+  background: var(--primary-strong);
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 0 12px var(--primary);
+}
+.score-side .row-player img {
+  width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
+  border: 2px solid var(--primary);
+}
+
+/* ---------- CANVAS ---------- */
+canvas.game-canvas {
+  display: block;
+  margin: 0 auto;
+  background: transparent;
+  cursor: none; /* custom cursor inside */
+  position: relative;
+  z-index: 2;
+  border-radius: 16px;
+}
+
+/* ---------- DICE ROLL UI ---------- */
+.dice-roller {
+  position: relative;
+  z-index: 3;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.dice-face {
+  font-family: 'Bungee', sans-serif;
+  font-size: 4rem;
+  color: var(--accent);
+  background: var(--primary-strong);
+  border-radius: 18px;
+  display: inline-block;
+  padding: 0.8rem 1.4rem;
+  min-width: 120px;
+  box-shadow: var(--shadow);
+}
+.dice-rolling { animation: dice-shake 0.08s infinite; }
+@keyframes dice-shake {
+  0%   { transform: translate(-2px, -3px) rotate(-2deg); }
+  50%  { transform: translate(2px,  3px) rotate(2deg); }
+  100% { transform: translate(-2px, 2px) rotate(-1deg); }
+}
+
+/* ---------- MODAL OVERRIDES ---------- */
+.modal-content {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+}
+.modal-header { border-bottom: 1px solid var(--border); }
+.modal-footer { border-top:    1px solid var(--border); }
+
+/* ---------- PALETTE PICKER ---------- */
+.palette-swatch {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  cursor: pointer;
+  display: inline-block;
+  margin: 0 4px;
+  box-shadow: 0 0 0 2px var(--border);
+}
+.palette-swatch.active { box-shadow: 0 0 0 3px var(--accent); }
+
+/* ---------- HORSE RACE BOARD ---------- */
+.horse-track {
+  position: relative;
+  background: repeating-linear-gradient(
+    180deg,
+    #6b3f1c 0,    #6b3f1c 56px,
+    #4d2d10 56px, #4d2d10 64px
+  );
+  border-radius: 14px;
+  height: 480px;
+  overflow: hidden;
+  border: 4px solid #2c1808;
+}
+.horse-lane {
+  position: absolute;
+  left: 0; right: 0;
+  height: 64px;
+  border-bottom: 4px solid #b8a06b;
+}
+.horse-sprite {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  height: 56px;
+  width: 70px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+  transition: left 0.3s linear;
+}
+.finish-line {
+  position: absolute;
+  top: 0; bottom: 0;
+  right: 30px;
+  width: 14px;
+  background: repeating-linear-gradient(45deg, #fff 0 8px, #000 8px 16px);
+}
+
+/* ---------- MEMORY GAME CUPS ---------- */
+.cup-table {
+  position: relative;
+  width: 720px;
+  height: 320px;
+  margin: 1rem auto;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.35), transparent 70%);
+}
+.cup {
+  position: absolute;
+  width: 160px;
+  height: 200px;
+  top: 70px;
+  background: linear-gradient(180deg, #d33 0%, #a01 50%, #500 100%);
+  border-radius: 80px 80px 20px 20px / 30px 30px 20px 20px;
+  border: 3px solid #2a0000;
+  box-shadow: inset -10px -10px 20px rgba(0,0,0,0.4);
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94),
+              left 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
+}
+.cup.lifted { transform: translateY(-110px); }
+.ball {
+  position: absolute;
+  width: 50px; height: 50px;
+  background: radial-gradient(circle at 35% 35%, #fff 0%, #ddd 30%, #888 100%);
+  border-radius: 50%;
+  top: 240px;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6));
+  transition: left 0.4s ease, opacity 0.3s ease;
+}
+
+/* ---------- HIGH STRIKER ---------- */
+.striker-lane {
+  position: relative;
+  width: min(700px, 90vw);
+  height: 36px;
+  margin: 0.5rem auto;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #c83737, #ffd166, #2ecc71);
+  box-shadow: inset 0 4px 8px rgba(0,0,0,0.4);
+}
+.striker-marker {
+  position: absolute;
+  top: -6px;
+  width: 10px; height: 48px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 0 12px #fff;
+}
+.striker-target {
+  position: absolute;
+  top: -10px;
+  width: 22px; height: 56px;
+  border: 4px solid #ffe14d;
+  border-radius: 6px;
+  box-shadow: 0 0 14px #ffe14d;
+  pointer-events: none;
+}
+.striker-tower {
+  position: relative;
+  width: 80px;
+  height: 480px;
+  margin: 1rem auto;
+  background: repeating-linear-gradient(
+    180deg,
+    #6b3f1c 0, #6b3f1c 28px,
+    #4d2d10 28px, #4d2d10 30px
+  );
+  border-radius: 8px;
+  border: 3px solid #2c1808;
+  overflow: hidden;
+}
+.striker-puck {
+  position: absolute;
+  left: 5px; right: 5px;
+  bottom: 0;
+  height: 30px;
+  background: linear-gradient(180deg, var(--accent), var(--primary-strong));
+  border-radius: 6px;
+  border: 2px solid #000;
+  transition: bottom 0.6s cubic-bezier(0.22,0.61,0.36,1);
+}
+.striker-bell {
+  position: absolute;
+  top: -28px; left: 50%;
+  transform: translateX(-50%);
+  width: 60px; height: 28px;
+  background: radial-gradient(ellipse, #ffd166, #b48800);
+  border-radius: 50% 50% 8px 8px;
+}
+
+/* ---------- BANKROLL / MEMORY UI ---------- */
+.bankroll {
+  font-family: 'Bungee', sans-serif;
+  font-size: 1.6rem;
+  color: var(--accent);
+  text-shadow: 2px 2px 0 var(--primary-strong);
+}
+
+/* ---------- SCROLLBAR (subtle) ---------- */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- UTILITIES ---------- */
+.center-flex { display: flex; align-items: center; justify-content: center; }
+.text-shadow-strong { text-shadow: 2px 2px 0 #000; }
+.hidden { display: none !important; }
+
+/* =====================================================
+   IMPROVED CAROUSEL CONTROLS & LAYOUT FIXES
+   ===================================================== */
+
+/* ---------- MORE VISIBLE CAROUSEL ARROWS ---------- */
+.carousel-control-prev,
+.carousel-control-next {
+  width: 10%;
+  opacity: 1;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: var(--primary-strong);
+  background-size: 50% 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5), 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  transform: scale(1.1);
+  background-color: var(--accent);
+  border-color: var(--primary-strong);
+  box-shadow: 0 0 30px var(--primary-strong), 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E");
+}
+
+.carousel-control-next-icon {
+  background-image: url("data:image/svg/xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+}
+
+.carousel-control-prev:hover .carousel-control-prev-icon,
+.carousel-control-next:hover .carousel-control-next-icon {
+  background-color: var(--accent);
+}
+
+/* ---------- FIXED LAYOUT SPACING (NO OVERLAP, KEPT CENTERED) ---------- */
+/* Main container - keep content centered, don't force right padding */
+.container-fluid {
+  position: relative;
+}
+
+/* Session leaderboard - better positioning that doesn't push content */
+.session-leaderboard {
+  position: fixed;
+  top: 90px;
+  right: 20px;
+  width: 260px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  z-index: 5;
+  backdrop-filter: blur(6px);
+}
+
+/* Add right margin to the carousel row to prevent overlap with fixed leaderboard */
+#standsCarousel .row {
+  margin-right: 280px; /* This only affects the carousel row, not everything */
+}
+
+/* For smaller screens, move leaderboard below carousel and remove margin */
+@media (max-width: 1200px) {
+  #standsCarousel .row {
+    margin-right: 0;
+  }
+  
+  .session-leaderboard {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    max-height: 300px;
+  }
+}
+
+/* Carousel item - ensure proper spacing for the description card */
+.carousel-item .row {
+  margin: 20px 0;
+  align-items: center;
+}
+
+/* Glass card inside carousel - ensure it doesn't get crushed */
+.carousel-item .glass-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.carousel-item .glass-card .d-flex {
+  margin-top: auto;
+  padding-top: 15px;
+}
+
+/* Stand card image container - ensure consistent height */
+.stand-card img {
+  width: 100%;
+  display: block;
+  height: 480px;
+  object-fit: cover;
+}
+
+/* Responsive adjustments for the description card */
+@media (max-width: 768px) {
+  .stand-card img {
+    height: 320px;
+  }
+  
+  .carousel-item .glass-card {
+    margin-top: 20px;
+  }
+  
+  .carousel-control-prev-icon,
+  .carousel-control-next-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* Additional spacing for the carousel container */
+#standsCarousel {
+  margin-bottom: 30px;
+}
+
+/* Ensure the carousel controls are always clickable and above content */
+.carousel-control-prev,
+.carousel-control-next {
+  z-index: 10;
+}
+
+/* Optional: Add a subtle background to the arrows area for better visibility */
+.carousel-control-prev {
+  background: linear-gradient(90deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%);
+}
+
+.carousel-control-next {
+  background: linear-gradient(270deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%);
+}
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover {
+  background: transparent;
+}
+
+/* ---------- ANIMATED PULSE FOR ARROWS ---------- */
+@keyframes arrowPulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--primary-strong);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255, 28, 177, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 28, 177, 0);
+  }
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  animation: arrowPulse 2s infinite;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+  animation: none;
+}
+
+/* Fix for any other pages that might have been affected */
+/* This ensures all other pages stay properly centered */
+body:not(.has-carousel) .container-fluid {
+  padding-right: 15px;
+  padding-left: 15px;
+}

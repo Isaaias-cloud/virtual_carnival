@@ -1,0 +1,17 @@
+<div class="game-stage">
+  <div class="game-bg" style="background-image:url('/images/stand_horses.png');"></div>
+  <div class="game-hud">
+    <a href="/games" class="btn btn-carnival secondary">← Back</a>
+    <h2 class="game-title funky-shade">Horse Races</h2>
+    <span class="timer" id="timer" style="visibility:hidden">--</span>
+  </div>
+  <div id="phase" class="container-fluid"></div>
+  <div class="score-side" id="score-side"></div>
+</div>
+<script src="/js/game_horses.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  AudioManager.init('/audio/game_horses.mp3', 0.35);
+  GameHorses.start();
+});
+</script>

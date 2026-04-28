@@ -1,0 +1,141 @@
+<div class="page-bg bg-games"></div>
+
+<div class="container-fluid py-3">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <a href="/" class="btn btn-carnival secondary">← Title Screen (End Game)</a>
+    <h2 class="ttl funky-shade text-white text-shadow-strong" style="margin:0;">Pick a Game</h2>
+    <span></span>
+  </div>
+
+  <!-- Carousel of stands -->
+  <div id="standsCarousel" class="carousel slide" data-bs-ride="false" data-bs-interval="false">
+    <div class="carousel-inner" id="stand-carousel-inner"></div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#standsCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#standsCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon"></span>
+    </button>
+  </div>
+
+  <div class="text-center mt-3">
+    <button id="btn-end-game" class="btn btn-carnival danger">End Game</button>
+  </div>
+</div>
+
+<!-- Session medals leaderboard -->
+<div class="session-leaderboard glass-card">
+  <h6 class="ttl funky" style="color:var(--primary-strong);margin-bottom:0.4rem;">Session Medals</h6>
+  <div id="session-medals"></div>
+</div>
+
+<!-- Per-stand scoreboard modal -->
+<div class="modal fade" id="standScoreboardModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title ttl funky" id="stand-sb-title">Scoreboard</h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="stand-sb-body"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  AudioManager.init('/audio/bgm_start.mp3', 0.35); // same music
+
+  // Render session medals
+  function renderMedals() {
+    const host = document.getElementById('session-medals');
+    const players = SessionManager.players();
+    const medals = SessionManager.medals();
+    if (!players.length) {
+      host.innerHTML = '<em class="lbl">No players in session.</em>';
+      return;
+    }
+    const sorted = [...players].sort((a, b) => (medals[b.id] || 0) - (medals[a.id] || 0));
+    host.innerHTML = '';
+    sorted.forEach(p => {
+      const row = document.createElement('div');
+      row.className = 'd-flex align-items-center gap-2 mb-1';
+      row.innerHTML = `
+        <img src="${p.photo_path}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;border:2px solid var(--primary)">
+        <span class="flex-grow-1">${escapeHtml(p.username)}</span>
+        <strong style="color:var(--accent)">🏅 ${medals[p.id] || 0}</strong>`;
+      host.appendChild(row);
+    });
+  }
+  renderMedals();
+
+  // Build stands carousel
+  (async function() {
+    const games = await API.getGames();
+    const inner = document.getElementById('stand-carousel-inner');
+    games.forEach((g, idx) => {
+      const item = document.createElement('div');
+      item.className = 'carousel-item' + (idx === 0 ? ' active' : '');
+      item.innerHTML = `
+        <div class="row align-items-center justify-content-center px-3">
+          <div class="col-md-8">
+            <a href="/game/${g.code}" class="text-decoration-none">
+              <div class="stand-card">
+                <img src="${g.image_path}" alt="${escapeHtml(g.name)}"
+                     onerror="this.style.background='var(--primary-strong)';this.style.height='480px';">
+                <div class="stand-name">${escapeHtml(g.name)}</div>
+              </div>
+            </a>
+          </div>
+          <div class="col-md-4">
+            <div class="glass-card">
+              <h4 class="ttl">${escapeHtml(g.name)}</h4>
+              <p class="lbl">${escapeHtml(g.description || '')}</p>
+              <div class="d-flex flex-column gap-2">
+                <a href="/game/${g.code}" class="btn btn-carnival">Play</a>
+                <button class="btn btn-carnival secondary btn-stand-sb" data-code="${g.code}" data-name="${escapeHtml(g.name)}">View Top Scores</button>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      inner.appendChild(item);
+    });
+
+    // attach scoreboard buttons
+    inner.querySelectorAll('.btn-stand-sb').forEach(b => {
+      b.addEventListener('click', async () => {
+        const modal = new bootstrap.Modal('#standScoreboardModal');
+        document.getElementById('stand-sb-title').textContent = b.dataset.name + ' — Top Scores';
+        const body = document.getElementById('stand-sb-body');
+        body.innerHTML = '<div class="text-center"><div class="spinner-border"></div></div>';
+        modal.show();
+        const rows = await API.scoreboard(b.dataset.code);
+        if (!rows.length) {
+          body.innerHTML = '<em class="lbl">No scores yet.</em>';
+          return;
+        }
+        body.innerHTML = `
+          <table class="score-table">
+            <thead><tr><th>#</th><th>Photo</th><th>Player</th><th>Highest Score</th></tr></thead>
+            <tbody>${rows.map((r, i) => `
+              <tr>
+                <td>${i + 1}</td>
+                <td><img src="${r.photo_path}" class="avatar"></td>
+                <td>${escapeHtml(r.username)}</td>
+                <td><strong>${r.max_score}</strong></td>
+              </tr>`).join('')}
+            </tbody>
+          </table>`;
+      });
+    });
+  })();
+
+  // End Game button
+  document.getElementById('btn-end-game').addEventListener('click', () => {
+    if (confirm('End the game and return to the title screen?')) {
+      SessionManager.reset();
+      window.location.href = '/';
+    }
+  });
+});
+</script>
